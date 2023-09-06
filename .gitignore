@@ -1,0 +1,12 @@
+/app/unencrypted/
+/app/__pycache__/
+.DS_Store
+bin/
+include/
+lib/
+etc/
+share/
+.env
+.venv
+pyvenv.cfg
+video-membership.code-workspace
