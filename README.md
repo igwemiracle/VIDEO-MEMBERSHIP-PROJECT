@@ -20,3 +20,6 @@
 >   > > - Table A
 >   > > - Table B
 >   > > - Table C
+> - Database for Testing
+>   > - keyspace -> Project 1
+>   >   > - tables (correspond to prod)
