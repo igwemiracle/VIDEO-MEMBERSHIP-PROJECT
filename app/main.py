@@ -1,28 +1,45 @@
-from fastapi import FastAPI
 import uvicorn
+import pathlib
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 from cassandra.cqlengine.management import sync_table
-from . import config, db
+from . import db
 from .users.models import User
 
-load_dotenv(".env")
+
 DB_SESSION = None
+BASE_DIR = pathlib.Path(__file__).resolve().parent # app/
+TEMPLATE_DIR = BASE_DIR / "templates"
+
 app = FastAPI()
-# settings = config.get_settings()
+templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
+load_dotenv(".env")
+
 
 @app.on_event("startup")
 def on_startup():
     global DB_SESSION
     #Triggered when fastapi starts
-    print("Hello world!!")
     DB_SESSION = db.get_session()
     sync_table(User)
 
-@app.get("/")
-def homepage():
-    return {
-        "message": "Welcome to my Homepage"
-    }
+@app.get("/", response_class=HTMLResponse)
+def homepage(request:Request):
+    username = "Igwe Miracle"
+    return templates.TemplateResponse("home.html", {"request":request, "username":username})
+
+@app.get("/login", response_class=HTMLResponse)
+def login_get_view(request:Request):
+    return templates.TemplateResponse("auth/login.html", {"request":request})
+
+
+@app.post("/login", response_class=HTMLResponse)
+def login_post_view(request:Request, email:str=Form(...),
+                   password:str=Form(...)):
+    print(email, password)
+    return templates.TemplateResponse("auth/login.html", {"request":request})
 
 @app.get("/user")
 def user_view_list():
@@ -30,4 +47,4 @@ def user_view_list():
     return list(query)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port="8000")
+    uvicorn.run(app, host="127.0.0.1", port="8000")

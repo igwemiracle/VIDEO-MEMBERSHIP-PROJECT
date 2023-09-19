@@ -1,4 +1,5 @@
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError 
 
 def generate_hash(plain_pwd):
     pwdhash = PasswordHasher()
@@ -11,5 +12,10 @@ def verify_hash(pwd_hash, plain_pwd):
     msg = ""
     try:
         verified = pwdhash.verify(pwd_hash, plain_pwd)
-    except:
-        pass
+    except VerifyMismatchError:
+        verified = False
+        msg = f"Invalid password."
+    except Exception as e:
+        verified = False
+        msg = f"Unexpected error \n{e}"
+    return msg, verified

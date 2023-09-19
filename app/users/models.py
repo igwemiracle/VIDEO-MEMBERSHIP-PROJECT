@@ -29,8 +29,10 @@ class User(Model):
     
     def verify_password(self, pwd):
         pwd_hash = self.password
-        verified = False
+
+        _, verified = security.verify_hash(pwd_hash, pwd)
         return verified
+
     
     @staticmethod
     def create_user(email, password=None):

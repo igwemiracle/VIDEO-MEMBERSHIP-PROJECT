@@ -22,4 +22,3 @@ def get_settings():
         # Handle the validation error, e.g., provide default values
         print(f"Validation error: {e}")
         return Settings(keyspace='default_value')
-
