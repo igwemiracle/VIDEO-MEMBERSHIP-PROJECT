@@ -1,12 +1,14 @@
 import uvicorn
+import json
 import pathlib
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from dotenv import load_dotenv
 from cassandra.cqlengine.management import sync_table
-from . import db
+from dotenv import load_dotenv
+from . import db, utils
 from .users.models import User
+from .users.schemas import UserSignUpSchema, UserLoginSchema
 
 
 DB_SESSION = None
@@ -36,10 +38,39 @@ def login_get_view(request:Request):
 
 
 @app.post("/login", response_class=HTMLResponse)
-def login_post_view(request:Request, email:str=Form(...),
-                   password:str=Form(...)):
-    print(email, password)
-    return templates.TemplateResponse("auth/login.html", {"request":request})
+def login_post_view(request:Request,
+                    email:str=Form(...),
+                    password:str=Form(...)):
+    raw_data = {
+        "email":email,
+        "password":password,
+    }
+    data, errors = utils.validate_schema_data_or_error(raw_data, UserLoginSchema)
+    return templates.TemplateResponse("auth/login.html",
+                                       {"request":request,
+                                        "data":data,
+                                        "errors":errors})
+
+@app.get("/signup", response_class=HTMLResponse)
+def signup_get_view(request:Request):
+    return templates.TemplateResponse("auth/signup.html", {"request":request})
+
+
+@app.post("/signup", response_class=HTMLResponse)
+def signup_post_view(request:Request,
+                    email:str=Form(...),
+                    password:str=Form(...),
+                    confirm_password:str=Form(...)):
+    raw_data = {
+        "email":email,
+        "password":password,
+        "confirm_password":confirm_password
+    }
+    data, errors = utils.validate_schema_data_or_error(raw_data, UserSignUpSchema)
+    return templates.TemplateResponse("auth/signup.html",
+                                    {"request":request,
+                                    "data": data,
+                                    "errors":errors})
 
 @app.get("/user")
 def user_view_list():

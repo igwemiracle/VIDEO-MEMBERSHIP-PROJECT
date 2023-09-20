@@ -1,0 +1,8 @@
+{% if errors %}
+<div>
+    <p style="color: red; margin-bottom: 2px;"> An error occurred please check the following: </p>
+    {% for err in errors %}
+    <li><b>{{ err.loc[0] }}</b>: {{ err.msg }}</li>
+    {% endfor %}
+</div>
+{% endif %}

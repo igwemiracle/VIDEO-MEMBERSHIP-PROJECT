@@ -1,20 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login Forms</h2>
+<h1>SignUp Forms</h1>
 
 {% include 'snippets/form_errors.html' %}
 
 <form action="" method="POST">
     <div>
         <label for="email">Email:</label><br>
-        <input type="email" name="email" placeholder="your@email.com"><br>
+        <input type="email" name="email" placeholder="your@email.com"><br><br>
     </div>
     <div>
         <label for="password">Password:</label><br>
         <input type="password" name="password" placeholder="your password"><br><br>
     </div>
-    <button type="submit">login </button>
+    <div>
+        <label for="password">Confirm Password:</label><br>
+        <input type="password" name="confirm_password" placeholder="confirm_password"><br><br>
+    </div>
+    <button type="submit">signup</button>
 </form>
 
 {% endblock %}
