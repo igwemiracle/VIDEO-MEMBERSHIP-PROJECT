@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from . import db, utils
 from .users.models import User
 from .users.schemas import UserSignUpSchema, UserLoginSchema
-
+from .shortcuts import render
 
 DB_SESSION = None
 BASE_DIR = pathlib.Path(__file__).resolve().parent # app/
@@ -30,11 +30,11 @@ def on_startup():
 @app.get("/", response_class=HTMLResponse)
 def homepage(request:Request):
     username = "Igwe Miracle"
-    return templates.TemplateResponse("home.html", {"request":request, "username":username})
+    return render(request, "home.html", {"username":username})
 
 @app.get("/login", response_class=HTMLResponse)
 def login_get_view(request:Request):
-    return templates.TemplateResponse("auth/login.html", {"request":request})
+    return render(request, "auth/login.html", {})
 
 
 @app.post("/login", response_class=HTMLResponse)
@@ -46,14 +46,15 @@ def login_post_view(request:Request,
         "password":password,
     }
     data, errors = utils.validate_schema_data_or_error(raw_data, UserLoginSchema)
-    return templates.TemplateResponse("auth/login.html",
-                                       {"request":request,
+    print(data)
+    return render(request, "auth/login.html",
+                                       {
                                         "data":data,
                                         "errors":errors})
 
 @app.get("/signup", response_class=HTMLResponse)
 def signup_get_view(request:Request):
-    return templates.TemplateResponse("auth/signup.html", {"request":request})
+    return render(request, "auth/signup.html", {})
 
 
 @app.post("/signup", response_class=HTMLResponse)
@@ -67,9 +68,8 @@ def signup_post_view(request:Request,
         "confirm_password":confirm_password
     }
     data, errors = utils.validate_schema_data_or_error(raw_data, UserSignUpSchema)
-    return templates.TemplateResponse("auth/signup.html",
-                                    {"request":request,
-                                    "data": data,
+    return render(request, "auth/signup.html",
+                                    {"data": data,
                                     "errors":errors})
 
 @app.get("/user")
